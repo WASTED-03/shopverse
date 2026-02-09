@@ -25,4 +25,10 @@ public class UserController {
     public org.springframework.http.ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         return org.springframework.http.ResponseEntity.ok(userService.login(request));
     }
+
+    @GetMapping("/me")
+    public org.springframework.http.ResponseEntity<String> me(
+            org.springframework.security.core.Authentication authentication) {
+        return org.springframework.http.ResponseEntity.ok("Authenticated user: " + authentication.getName());
+    }
 }
