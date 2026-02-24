@@ -7,16 +7,20 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
 
+@Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private static final String SECRET_KEY = "shopverse-secret-key-shopverse-secret-key";
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     @Override
     protected void doFilterInternal(
@@ -31,7 +35,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             try {
                 Claims claims = Jwts.parserBuilder()
-                        .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                        .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                         .build()
                         .parseClaimsJws(token)
                         .getBody();
