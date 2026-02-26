@@ -4,6 +4,7 @@ import com.shopverse.order_service.client.ProductClient;
 import com.shopverse.order_service.dto.ProductResponse;
 import com.shopverse.order_service.model.Order;
 import com.shopverse.order_service.repository.OrderRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +18,7 @@ public class OrderService {
         this.productClient = productClient;
     }
 
+    @CircuitBreaker(name = "productService", fallbackMethod = "fallbackProduct")
     public Order placeOrder(Long productId, Integer quantity, String authHeader) {
 
         ProductResponse product = productClient.getProduct(productId, authHeader);
@@ -30,6 +32,18 @@ public class OrderService {
         order.setQuantity(quantity);
         order.setTotalPrice(product.price() * quantity);
         order.setStatus("CREATED");
+
+        return repository.save(order);
+    }
+
+    public Order fallbackProduct(Long productId, Integer quantity,
+            String authHeader, Throwable ex) {
+
+        Order order = new Order();
+        order.setProductId(productId);
+        order.setQuantity(quantity);
+        order.setTotalPrice(0.0);
+        order.setStatus("FAILED");
 
         return repository.save(order);
     }
