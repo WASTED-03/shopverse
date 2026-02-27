@@ -1,4 +1,4 @@
-package com.shopverse.user_service.security;
+package com.shopverse.product_service.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -52,8 +52,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             } catch (Exception e) {
-                // Token invalid or expired — leave SecurityContext anonymous,
-                // downstream security config will handle 401/403
+                // Token invalid or expired — SecurityContext stays anonymous,
+                // SecurityConfig will return 401/403
             }
         }
 
